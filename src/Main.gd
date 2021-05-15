@@ -4,7 +4,7 @@ var time = 0
 onready var label := get_node("Label")
 
 func _ready():
-#	time = loaded time
+	load_game()
 	pass
 
 func _process(delta):
@@ -18,7 +18,7 @@ func serialize():
 	return {"time":time}
 
 func save():
-	print_debug("Saving the game.")
+#	print_debug("Saving the game.")
 	var save_game := File.new()
 	var err = OK
 	for i in 1:
@@ -30,6 +30,17 @@ func save():
 		save_game.store_line(to_json(save_what))
 	save_game.close()
 
+func load_game():
+	var save_game = File.new()
+	if not save_game.file_exists("user://savegame.save"):
+		print_debug("No save to load.")
+		return
+	
+	save_game.open("user://savegame.save", File.READ)
+	while save_game.get_position() < save_game.get_len():
+		var node_data = parse_json(save_game.get_line())
+		time = node_data.time
+	save_game.close()
 func handle_error(error):
 	print("An error with code %s ocurred." % error)
 	pass
