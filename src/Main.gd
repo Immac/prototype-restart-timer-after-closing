@@ -2,27 +2,20 @@ extends Control
 
 var is_running := false
 var time_elapsed := 0.0
-var time_paused := 0.0
-var time_to_display setget,get_time_to_display
 
 onready var label := get_node("Label")
 func _ready():
 	load_game()
 	pass
 
-func get_time_to_display() -> float:
-	return time_elapsed - time_paused
-
 func _process(delta:float):
 	var delta_ms := delta * 1000
-	
-	time_elapsed += delta_ms
-	if not is_running:
-		time_paused += delta_ms
+	if is_running :
+		time_elapsed += delta_ms
 
 func _physics_process(_delta):
 	save()
-	label.text = formatted_time(self.time_to_display)
+	label.text = formatted_time(time_elapsed)
 
 func formatted_time(time:float) -> String:
 	var mils = fmod(time,1000)
@@ -35,7 +28,6 @@ func formatted_time(time:float) -> String:
 func serialize():
 	return {
 		"save_time":OS.get_system_time_msecs(), #This would be better as metadata on the save itself, but this is a prototype
-		"time_paused":time_paused,
 		"time_elapsed":time_elapsed,
 		"is_running":is_running
 	}
@@ -63,7 +55,6 @@ func load_game():
 		var save_data = parse_json(save_game.get_line())
 		var save_elapsed_time = OS.get_system_time_msecs() - save_data.save_time
 		self.time_elapsed = save_data.time_elapsed
-		self.time_paused = save_data.time_paused
 		self.is_running = save_data.is_running
 		if save_data.is_running:
 			self.time_elapsed += save_elapsed_time
@@ -75,7 +66,6 @@ func handle_error(error):
 
 func reset():
 	self.time_elapsed = 0
-	self.time_paused = 0
 
 func toggle_pause():
 	is_running = not is_running
