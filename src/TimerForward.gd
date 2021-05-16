@@ -1,5 +1,10 @@
 extends Control
 
+# This implementation works as long as the application is either closed or in 
+# the foreground.
+# Should be good for desktop platforms, still, it yields inconsistent results 
+# when the thread is paused
+
 var is_running := false
 var time_elapsed := 0.0
 

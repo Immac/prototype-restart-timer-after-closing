@@ -11,7 +11,7 @@ config_version=4
 [application]
 
 config/name="Prototype Restart Timer After Closing"
-run/main_scene="res://Main.tscn"
+run/main_scene="res://TimerBackground.tscn"
 config/icon="res://icon.png"
 
 [display]
