@@ -1,6 +1,6 @@
 extends Control
 
-var time = 0
+var time := 0
 onready var time_start = OS.get_system_time_msecs()
 onready var label := get_node("Label")
 
@@ -12,8 +12,17 @@ func _process(delta):
 	time = OS.get_system_time_msecs() - time_start
 
 func _physics_process(_delta):
-	label.text = var2str(time)
+	
+	label.text = formatted_time(time)
 	save()
+
+func formatted_time(time:int) -> String:
+	var mils = fmod(time,1000)
+	var secs = fmod(time/1000,60)
+	var mins = fmod(time/(1000*60),60)
+	var hours = fmod(time/(1000*60*60),60)
+	var days = fmod(time/(1000*60*60*60),24)
+	return "%02d:%02d:%02d:%03d" % [hours,mins,secs,mils]
 
 func serialize():
 	return {
@@ -48,3 +57,9 @@ func load_game():
 func handle_error(error):
 	print("An error with code %s ocurred." % error)
 	pass
+
+func reset():
+	time_start = OS.get_system_time_msecs()
+
+func _on_Button_pressed():
+	reset()
