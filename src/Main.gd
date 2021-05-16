@@ -1,36 +1,46 @@
 extends Control
 
-var time := 0
-onready var time_start = OS.get_system_time_msecs()
-onready var label := get_node("Label")
+var is_running := false
+var time_elapsed := 0.0
+var time_paused := 0.0
+var time_to_display setget,get_time_to_display
 
+onready var label := get_node("Label")
 func _ready():
 	load_game()
 	pass
 
-func _process(delta):
-	time = OS.get_system_time_msecs() - time_start
+func get_time_to_display() -> float:
+	return time_elapsed - time_paused
+
+func _process(delta:float):
+	var delta_ms := delta * 1000
+	
+	time_elapsed += delta_ms
+	if not is_running:
+		time_paused += delta_ms
 
 func _physics_process(_delta):
-	
-	label.text = formatted_time(time)
 	save()
+	label.text = formatted_time(self.time_to_display)
 
-func formatted_time(time:int) -> String:
+func formatted_time(time:float) -> String:
 	var mils = fmod(time,1000)
 	var secs = fmod(time/1000,60)
 	var mins = fmod(time/(1000*60),60)
 	var hours = fmod(time/(1000*60*60),60)
-	var days = fmod(time/(1000*60*60*60),24)
+	var _days = fmod(time/(1000*60*60*60),24)
 	return "%02d:%02d:%02d:%03d" % [hours,mins,secs,mils]
 
 func serialize():
 	return {
-		"time_start":time_start
+		"save_time":OS.get_system_time_msecs(), #This would be better as metadata on the save itself, but this is a prototype
+		"time_paused":time_paused,
+		"time_elapsed":time_elapsed,
+		"is_running":is_running
 	}
 
 func save():
-#	print_debug("Saving the game.")
 	var save_game := File.new()
 	var err = OK
 	for i in 1:
@@ -50,8 +60,13 @@ func load_game():
 	
 	save_game.open("user://savegame.save", File.READ)
 	while save_game.get_position() < save_game.get_len():
-		var node_data = parse_json(save_game.get_line())
-		time_start = node_data.get("time_start",time_start)
+		var save_data = parse_json(save_game.get_line())
+		var save_elapsed_time = OS.get_system_time_msecs() - save_data.save_time
+		self.time_elapsed = save_data.time_elapsed
+		self.time_paused = save_data.time_paused
+		self.is_running = save_data.is_running
+		if save_data.is_running:
+			self.time_elapsed += save_elapsed_time
 	save_game.close()
 	
 func handle_error(error):
@@ -59,7 +74,15 @@ func handle_error(error):
 	pass
 
 func reset():
-	time_start = OS.get_system_time_msecs()
+	self.time_elapsed = 0
+	self.time_paused = 0
 
+func toggle_pause():
+	is_running = not is_running
+
+# signals
 func _on_Button_pressed():
 	reset()
+
+func _on_PausePlay_pressed():
+	toggle_pause()
