@@ -12,7 +12,6 @@ func _ready():
 
 # business
 func _physics_process(_delta):
-	save()
 	display_time()
 
 func display_time():
