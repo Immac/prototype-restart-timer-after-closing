@@ -1,7 +1,7 @@
 extends Control
 
 var time = 0
-onready var time_start = OS.get_datetime(true)
+onready var time_start = OS.get_system_time_msecs()
 onready var label := get_node("Label")
 
 func _ready():
@@ -9,7 +9,7 @@ func _ready():
 	pass
 
 func _process(delta):
-	time = OS.get_datetime(true) - time_start
+	time = OS.get_system_time_msecs() - time_start
 
 func _physics_process(_delta):
 	label.text = var2str(time)
@@ -42,9 +42,9 @@ func load_game():
 	save_game.open("user://savegame.save", File.READ)
 	while save_game.get_position() < save_game.get_len():
 		var node_data = parse_json(save_game.get_line())
-		time = node_data.time
 		time_start = node_data.get("time_start",time_start)
 	save_game.close()
+	
 func handle_error(error):
 	print("An error with code %s ocurred." % error)
 	pass
