@@ -53,16 +53,15 @@ func load_game():
 	save_game.open("user://savegame.save", File.READ)
 	while save_game.get_position() < save_game.get_len():
 		var save_data = parse_json(save_game.get_line())
-		var save_elapsed_time = OS.get_system_time_msecs() - save_data.save_time
 		self.time_elapsed = save_data.time_elapsed
 		self.is_running = save_data.is_running
 		if save_data.is_running:
+			var save_elapsed_time = OS.get_system_time_msecs() - save_data.save_time
 			self.time_elapsed += save_elapsed_time
 	save_game.close()
 	
 func handle_error(error):
 	print("An error with code %s ocurred." % error)
-	pass
 
 func reset():
 	self.time_elapsed = 0

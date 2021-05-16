@@ -18,7 +18,7 @@ font_data = ExtResource( 2 )
 size = 20
 font_data = ExtResource( 2 )
 
-[node name="Node2D" type="Control"]
+[node name="Timer" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 4.0
@@ -45,12 +45,18 @@ __meta__ = {
 }
 
 [node name="Button" type="Button" parent="."]
-margin_left = 415.311
-margin_top = 362.555
-margin_right = 599.311
-margin_bottom = 431.555
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = 395.0
+margin_top = 55.0
+margin_right = -417.0
+margin_bottom = 136.0
 custom_fonts/font = SubResource( 2 )
 text = "reset"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="PausePlay" type="Button" parent="."]
 anchor_top = 0.5
